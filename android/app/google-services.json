@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "616034826254",
+    "project_id": "facto-adc57",
+    "storage_bucket": "facto-adc57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616034826254:android:5765e920791536a3fc245f",
+        "android_client_info": {
+          "package_name": "com.codingdevs.facto_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "616034826254-129chc9jahq88l7m96gkdasatgqbao5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codingdevs.facto_user",
+            "certificate_hash": "49475d3eb52ae670be968e1315c034234cb7fe87"
+          }
+        },
+        {
+          "client_id": "616034826254-tl5lsvltna8gng06cje0st16k6kmkk6a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl_Sh6wfKGwVLneoQ0D84blTwhpuYwV2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616034826254-tl5lsvltna8gng06cje0st16k6kmkk6a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
