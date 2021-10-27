@@ -305,64 +305,65 @@ class CardDialogState extends State<CardDialog> {
           children: [
             Positioned(
               top: Globals.height * 0.05,
-              left: Globals.width * 0.1,
+              left: Globals.width * 0.05,
               child: Container(
-                padding: EdgeInsets.all(20),
-                height: Globals.height * 0.15,
-                width: Globals.width * 0.8,
+                padding: EdgeInsets.only(top: Globals.getHeight(22),left: 10,right: 10.0,bottom: 10.0),
+                height: Globals.height * 0.165,
+                width: Globals.width * 0.9,
                 decoration: BoxDecoration(
                     color: Color(0xFFEDF2F4),
-                    border: Border.all(color: Colors.red, width: 2.0),
+                    border: Border.all(color: Colors.red, width: 1.0),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(40.0),
                         bottomRight: Radius.circular(40.0))),
                 child: Center(
-                  child: Text(this.widget.claim,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 25)),
+                  child: AutoSizeText(this.widget.claim,
+                      style: GoogleFonts.montserrat(fontSize: 22,fontWeight: FontWeight.w300,)),
                 ),
               ),
             ),
             Positioned(
-              top: Globals.height * 0.3,
-              left: Globals.width * 0.1,
+              top: Globals.height * 0.25,
+              left: Globals.width * 0.05,
               child: Container(
                 height: Globals.height * 0.25,
-                width: Globals.width * 0.8,
+                width: Globals.width * 0.9,
                 decoration: BoxDecoration(
                   color: Colors.grey,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40.0),
                       bottomRight: Radius.circular(40.0)),
                   image: DecorationImage(
-                      image: NetworkImage(this.widget.url), fit: BoxFit.cover),
+                      image: NetworkImage(this.widget.url),
+                      fit: BoxFit.cover),
                 ),
               ),
             ),
             Positioned(
-              top: Globals.height * 0.56,
-              left: Globals.width * 0.12,
+              top: Globals.height * 0.51,
+              left: Globals.width * 0.06,
               child: Container(
-                height: Globals.height * 0.25,
+                height: Globals.height * 0.15,
                 width: Globals.width * 0.8,
-                child: AutoSizeText('Source: ' + this.widget.url1.toString()),
+                child: AutoSizeText(
+                    'Source: ' + Uri.parse(this.widget.url1.toString()).host),
               ),
             ),
             Positioned(
-              top: Globals.height * 0.65,
-              left: Globals.width * 0.1,
+              top: Globals.height * 0.6,
+              left: Globals.width * 0.05,
               child: Container(
-                padding: EdgeInsets.all(10.0),
-                height: Globals.height * 0.15,
-                width: Globals.width * 0.8,
+                padding: EdgeInsets.only(top: Globals.getHeight(22),left: 10,right: 10.0,bottom: 10.0),
+                height: Globals.height * 0.17,
+                width: Globals.width * 0.9,
                 child: Center(
-                  child: Text(this.widget.truth,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18)),
+                  child:  AutoSizeText(this.widget.truth,
+                      style: GoogleFonts.montserrat(fontWeight: FontWeight.w300,
+                          fontSize: 16)),
                 ),
                 decoration: BoxDecoration(
                     color: Color(0xFFEDF2F4),
-                    border: Border.all(color: Colors.green, width: 2.0),
+                    border: Border.all(color: Colors.green, width: 1.0),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(40.0),
                         bottomRight: Radius.circular(40.0))),
@@ -372,8 +373,8 @@ class CardDialogState extends State<CardDialog> {
               top: Globals.height * 0.03,
               left: Globals.width * 0.2,
               child: Container(
-                width: Globals.width * 0.3,
-                height: Globals.getHeight(50),
+                width: Globals.width * 0.22,
+                height: Globals.getHeight(40),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                     color: Color(0xFFC40010)),
@@ -386,11 +387,11 @@ class CardDialogState extends State<CardDialog> {
               ),
             ),
             Positioned(
-              top: Globals.height * 0.63,
+              top: Globals.height * 0.58,
               right: Globals.width * 0.17,
               child: Container(
-                width: Globals.width * 0.3,
-                height: Globals.getHeight(50),
+                width: Globals.width * 0.22,
+                height: Globals.getHeight(40),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                     color: Color(0xFF34A853)),

@@ -22,29 +22,27 @@ class _DetailsState extends State <Details>{
   bool isLoading = true;
 
   Widget _loadingScreen(String value) {
-    return AlertDialog(
-        shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        backgroundColor: Colors.white,
-        content: Container(
-            height: 60,
-            child: Center(
-              child: Row(
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    value,
-                    style: TextStyle(
-                        fontFamily: "Livvic", fontSize: 23, letterSpacing: 1),
+    return
+      AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)),
+          backgroundColor: Colors.white,
+          content: Container(
+              height: Globals.getHeight(80),
+              child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(Images.logo,width: Globals.getWidth(100),height: Globals.getHeight(50),),
+
+                      Container(child:  LinearProgressIndicator(
+                        backgroundColor: Colors.grey,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                      ),width: Globals.getWidth(200))
+                    ],
                   )
-                ],
-              ),
-            )));
+              )));
   }
   Widget build(BuildContext context){
     return SafeArea(child: Scaffold(

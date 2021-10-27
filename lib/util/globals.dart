@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 class Globals{
   static double height;
   static double width;
+  static int selectedIndex;
   static double getHeight(double value){
     return (value/1013.3333333333334) * height;
   }

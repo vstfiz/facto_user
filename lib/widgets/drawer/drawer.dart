@@ -122,9 +122,11 @@ class _MyAppDrawerState extends State<MyAppDrawer> {
                             return FileClaim();
                           }));
                         }
-                        Navigator.push(context, MaterialPageRoute(builder: (_) {
-                          return SignIn();
-                        }));
+                        else{
+                          Navigator.push(context, MaterialPageRoute(builder: (_) {
+                            return SignIn();
+                          }));
+                        }
                       },
                       child: AutoSizeText(
                         'Request\nFact Check',

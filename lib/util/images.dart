@@ -4,6 +4,7 @@ library images;
 class Images{
 
   static const String logo = 'assets/images/logo.png';
+  static const String logo_loading = 'assets/images/logo_facto.png';
   static const String bar_search_icon = 'assets/images/search.png';
   static const String bar_images_feed_icon = 'assets/images/news_feed.png';
   static const String bar_video_feed_icon = 'assets/images/video_feed.png';

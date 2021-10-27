@@ -161,17 +161,17 @@ class FirebaseDB {
     }
   }
 
-  // static Future<void> feedCloner() async {
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //   var ref = firestore.collection('claims');
-  //   QuerySnapshot querySnapshot = await ref.where('isFeed',isEqualTo: true).where('feedType',isEqualTo: false).get();
-  //   var ds = querySnapshot.docs.first.data();
-  //   print(querySnapshot.docs.first.data().toString());
-  //   for(int i=0;i<25;i++){
-  //     print('datat adddddd 1');
-  //     await ref.add(ds);
-  //   }
-  // }
+  static Future<void> feedCloner() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    var ref = firestore.collection('feeds');
+    QuerySnapshot querySnapshot = await ref.where('feedType',isEqualTo: true).get();
+    var ds = querySnapshot.docs.first.data();
+    print(querySnapshot.docs.first.data().toString());
+    for(int i=0;i<25;i++){
+      print('datat adddddd 1');
+      await ref.add(ds);
+    }
+  }
   static Future<Ad> getAd(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var value = List.filled(0, Ad('', ''), growable: true);

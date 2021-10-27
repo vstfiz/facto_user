@@ -57,26 +57,20 @@ class _FileClaimState extends State<FileClaim> {
                 borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
             content: Container(
-                height: 60,
+                height: Globals.getHeight(80),
                 child: Center(
-                  child: Row(
-                    children: <Widget>[
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            ColorStyle.button_red),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        value,
-                        style: TextStyle(
-                            fontFamily: "Livvic",
-                            fontSize: 23,
-                            letterSpacing: 1),
-                      )
-                    ],
-                  ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(Images.logo,width: Globals.getWidth(100),height: Globals.getHeight(50),),
+
+                        Container(child:  LinearProgressIndicator(
+                          backgroundColor: Colors.grey,
+                          valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                        ),width: Globals.getWidth(200))
+                      ],
+                    )
                 ))));
   }
 
@@ -97,6 +91,16 @@ class _FileClaimState extends State<FileClaim> {
                   child: IconButton(
                     icon: Icon(Icons.close),
                     onPressed: () {
+                      setState(() {
+                        _claimController.clear();
+                        _file = null;
+                        _url2Controller.clear();
+                        _descriptionController.clear();
+                        _url1Controller.clear();
+                        uri = 'Image';
+                        imageName = '';
+                        acceptTnc = false;
+                      });
                       Navigator.pop(context);
                     },
                   ),
@@ -144,28 +148,44 @@ class _FileClaimState extends State<FileClaim> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color(0xFFEDF2F4),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pushReplacementNamed('/dashboard');
-          },
-          icon: new Image.asset(
-            Images.back_btn,
-            height: Globals.height * (24 / 812),
-            width: Globals.width * (24 / 375),
-          ),
-        ),
         actions: [
-          Container(
-            width: Globals.width,
-            padding: EdgeInsets.symmetric(vertical: 15),
-            child: AutoSizeText(
-              'Fact Check',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.montserrat(
-                  fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          )
+         Stack(
+           children: [
+             Container(
+               width: Globals.width,
+               padding: EdgeInsets.symmetric(vertical: 15),
+               child: AutoSizeText(
+                 'Fact Check',
+                 textAlign: TextAlign.center,
+                 style: GoogleFonts.montserrat(
+                     fontSize: 20, fontWeight: FontWeight.bold),
+               ),
+             ),
+             Positioned(child: Container(
+               height: Globals.getHeight(30),
+               child: TextButton(
+                 onPressed: () {
+                   if(Globals.currentTab != 2){
+                     setState(() {
+                       Globals.currentTab = 2;
+                     });
+                     Globals.pageController.jumpToPage(2);
+                   }
+                   else{
+                     Navigator.of(context).pop();
+                   }
+                 },),
+               decoration: BoxDecoration(
+                   image: DecorationImage(
+                       image: new AssetImage(Images.back_btn),fit: BoxFit.contain
+                   )
+               ),
+             ),left: 0.0,top: 12.0)
+             
+           ],
+         )
         ],
       ),
       backgroundColor: Colors.white,
@@ -279,13 +299,6 @@ class _FileClaimState extends State<FileClaim> {
                            try{
                              String path = result.files.first.path;
                              _file = File(path);
-                             // var compressedFile = await FlutterImageCompress.compressWithFile(
-                             //   _file.absolute.path,
-                             //   quality: 85,
-                             // );
-                             // print(compressedFile);
-                             // File newFile = File.fromRawPath(compressedFile);
-                             // print(newFile.uri.toString());
                              String url = await _uploadImage(_file);
                              setState(() {
                                imageName = result.files.first.name;

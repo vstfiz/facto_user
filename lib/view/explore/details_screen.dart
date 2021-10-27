@@ -54,20 +54,27 @@ class _DetailsScreenState extends State<DetailScreen> {
           ),
           child: Center(
             child: Stack(
+              alignment: Alignment.center,
               children: [
                 Positioned(child: Container(
                   height: Globals.width * 0.5,
                   width: Globals.width * 0.5,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: NetworkImage(this.widget.url),fit: BoxFit.cover
-                    ),
+                    // image: DecorationImage(
+                    //   image: NetworkImage(this.widget.url),fit: BoxFit.cover
+                    // ),
                   ),
-                ),top: Globals.height *0.4,left: Globals.width * 0.25,),
+                  child: ImageIcon(
+                    new NetworkImage(
+                        this.widget
+                            .url),
+                    color: Colors
+                        .white,
+                  ),
+                ),top: Globals.height *0.4,),
                 Positioned(
-                    left: Globals.width * 0.0,
-                    bottom: Globals.height * 0.3,
+                    bottom: Globals.height * 0.2,
                     child: Container(
                       height: Globals.height * 0.05,
                       width: Globals.width,

@@ -283,7 +283,7 @@ class _AboutUsState extends State<AboutUs> {
               left: Globals.width * 0.7306,
               child: Container(
                 width: Globals.width * (60/375),
-                height: Globals.height * (25/812),
+                height: Globals.height * (32/812),
                 child: TextButton(
                   onPressed: () {
                     _webViewDialog('https://factonews.co/code-of-principles/');

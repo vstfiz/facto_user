@@ -24,32 +24,40 @@ class _UserProfileState extends State<UserProfile> {
 
 
   Widget _loadingDialog(String value) {
-    return AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0)),
-        backgroundColor: Colors.white,
-        content: Container(
-            height: 60,
-            child: Center(
-              child: Row(
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        ColorStyle.button_red),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    value,
-                    style: TextStyle(
-                        fontFamily: "Livvic",
-                        fontSize: 23,
-                        letterSpacing: 1),
-                  )
-                ],
-              ),
-            )));
+    return
+      AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)),
+          backgroundColor: Colors.white,
+          content: Container(
+              height: Globals.getHeight(150),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Image.asset(Images.logo_loading,width: Globals.getWidth(100),height: Globals.getHeight(100),),
+                    Row(
+
+                      children: <Widget>[
+                        CircularProgressIndicator(
+                          valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                        ),
+                        SizedBox(
+                          width: Globals.getWidth(20),
+                        ),
+                        Text(
+                          value,
+                          style: TextStyle(
+                              fontFamily: "Livvic",
+                              fontSize: 23,
+                              letterSpacing: 1),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )));
   }
 
   @override

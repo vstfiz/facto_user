@@ -58,29 +58,27 @@ class _ListClaimsState extends State<ListClaims> {
 
 
   Widget _loadingScreen(String value) {
-    return AlertDialog(
-        shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        backgroundColor: Colors.white,
-        content: Container(
-            height: 60,
-            child: Center(
-              child: Row(
-                children: <Widget>[
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    value,
-                    style: TextStyle(
-                        fontFamily: "Livvic", fontSize: 23, letterSpacing: 1),
+    return
+      AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0)),
+          backgroundColor: Colors.white,
+          content: Container(
+              height: Globals.getHeight(80),
+              child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(Images.logo,width: Globals.getWidth(100),height: Globals.getHeight(50),),
+
+                      Container(child:  LinearProgressIndicator(
+                        backgroundColor: Colors.grey,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                      ),width: Globals.getWidth(200))
+                    ],
                   )
-                ],
-              ),
-            )));
+              )));
   }
   _getData() async{
     data = await FirebaseDB.getFilteredRequests(this.widget.Status).whenComplete((){
@@ -160,11 +158,13 @@ class _ListClaimsState extends State<ListClaims> {
                         });
                       }
                     },
+                    textAlignVertical: TextAlignVertical.center,
                     decoration: InputDecoration(
                         hintText: 'Search Here',
+
                         hintStyle: TextStyle(fontSize: 20),
                         contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        EdgeInsets.symmetric(horizontal: 20),
                         border: InputBorder.none,
                         suffixIcon: Icon(
                           Icons.search,
@@ -362,7 +362,7 @@ class CardDialogState extends State<CardDialog> {
                 ),
                 decoration: BoxDecoration(
                     color: this.widget.status=='Pending'?ColorStyle.in_progress.withOpacity(0.2):this.widget.status=='True'?ColorStyle.completed.withOpacity(0.2):ColorStyle.rejected.withOpacity(0.2),
-                    border: Border.all(color: Colors.green, width: 2.0),
+                    border: Border.all(color: this.widget.status=='Pending'?ColorStyle.in_progress.withOpacity(0.6):this.widget.status=='True'?ColorStyle.completed.withOpacity(0.6):ColorStyle.rejected.withOpacity(0.6), width: 2.0),
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(40.0),
                         bottomRight: Radius.circular(40.0))),
@@ -393,7 +393,7 @@ class CardDialogState extends State<CardDialog> {
                 height: Globals.getHeight(50),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
-                    color: Color(0xFF34A853)),
+                    color: this.widget.status=='Pending'?ColorStyle.in_progress:this.widget.status=='True'?ColorStyle.completed:ColorStyle.rejected),
                 child: Center(
                   child: Text(
                     'Status',
