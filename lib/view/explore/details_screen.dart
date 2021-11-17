@@ -35,7 +35,7 @@ class _DetailsScreenState extends State<DetailScreen> {
           setState(() {
             Globals.category = this.widget.name;
           });
-      Navigator.of(context).push(new MaterialPageRoute(builder: (context){return HomeScreen();}));
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context){return HomeScreen();}));
     });
   }
 

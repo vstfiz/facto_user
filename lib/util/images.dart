@@ -27,6 +27,8 @@ class Images{
   static const String dashboard_btn = 'assets/images/dashboard_btn.png';
   static const String no_data = 'assets/images/no_data.png';
   static const String confirmation = 'assets/images/confirmation.png';
+  static const String earth = 'assets/images/earth.png';
+  static const String india = 'assets/images/india.jpg';
 
 }
 

@@ -36,6 +36,7 @@ class Globals{
   static int currentTab = 2;
 
   static bool language = true;
+  static String location = 'India';
   static User user;
   static String category;
   static bool resendStatus = false;

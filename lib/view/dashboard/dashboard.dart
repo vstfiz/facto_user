@@ -28,6 +28,7 @@ class _DashBoardState extends State<DashBoard> {
   Curve pageTurnCurve = Curves.ease;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool isLoading = true;
+  var locations = ['India', 'Worldwide'];
   var feeds = List.filled(0, Feed('', '', '', '', ''), growable: true);
   String url = 'f';
   String description = 'f';
@@ -441,7 +442,7 @@ class _DashBoardState extends State<DashBoard> {
                       //     top: Globals.height * (7 / 812),
                       //     child: ),
                       Positioned(
-                        left: Globals.width * (137 / 375),
+                        left: Globals.width * (110 / 375),
                         top: 10,
                         child: Container(
                           width: Globals.width * (100 / 375),
@@ -453,13 +454,53 @@ class _DashBoardState extends State<DashBoard> {
                         ),
                       ),
                       Positioned(
-                          right: Globals.width * (0 / 375),
+                        left: Globals.width * (235 / 375),
+                        top: 5.0,
+                        child: PopupMenuButton<String>(
+                          icon: Globals.location == 'India'?new Image.asset(Images.india):new Image.asset(Images.earth),
+                          onSelected: (String result) {
+                            print(result);
+                          if(Globals.location != result){
+                            setState(() {
+                              Globals.location = result;
+                            });
+                            print(Globals.location);
+                            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context){return HomeScreen();}));
+                          }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                             PopupMenuItem<String>(
+                              value: 'India',
+                              child: Row(
+                                children: [
+                                  new Image.asset(Images.india,width: 30,height: 30,),
+                                  SizedBox(width: 10),
+                                  Text('India'),
+                                ],
+                              ),
+                            ),
+                             PopupMenuItem<String>(
+                              value: 'WorldWide',
+                              child: Row(
+                                children: [
+                                  new Image.asset(Images.earth,width: 30,height: 30),
+                                  SizedBox(width: 10),
+                                  Text('WorldWide'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                          left: Globals.width * (280 / 375),
                           top: Globals.height * (2 / 812),
+
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Container(
-                                  width: Globals.width * (60 / 375),
+                                  width: Globals.width * (50 / 375),
                                   height: Globals.height * (40 / 812),
                                   child: TextButton(
                                     onPressed: () {
@@ -477,7 +518,7 @@ class _DashBoardState extends State<DashBoard> {
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w700,
-                                          fontSize: 14),
+                                          fontSize: 12),
                                     ),
                                   ),
                                 ),

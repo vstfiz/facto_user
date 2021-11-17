@@ -60,6 +60,7 @@ class FirebaseDB {
       if (Globals.category == null) {
         querySnapshot = await ref
             .where('status', isEqualTo: 'True')
+            .where('geo', isEqualTo: Globals.location)
             .where('feedType', isEqualTo: Globals.feedType)
             .where('language', isEqualTo: language ? 'English' : 'Hindi')
             .limit(5)
@@ -67,6 +68,7 @@ class FirebaseDB {
       } else {
         querySnapshot = await ref
             .where('status', isEqualTo: 'True')
+            .where('geo', isEqualTo: Globals.location)
             .where('feedType', isEqualTo: Globals.feedType)
             .where('language', isEqualTo: language ? 'English' : 'Hindi')
             .where('category', isEqualTo: Globals.category)
@@ -84,9 +86,7 @@ class FirebaseDB {
       });
       Globals.currentFeed = value.first;
       return value;
-    }
-
-    else {
+    } else {
       QuerySnapshot querySnapshot = await ref
           .where('status', isEqualTo: 'True')
           .where('feedType', isEqualTo: false)
@@ -164,14 +164,16 @@ class FirebaseDB {
   static Future<void> feedCloner() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var ref = firestore.collection('feeds');
-    QuerySnapshot querySnapshot = await ref.where('feedType',isEqualTo: true).get();
+    QuerySnapshot querySnapshot =
+        await ref.where('feedType', isEqualTo: true).get();
     var ds = querySnapshot.docs.first.data();
     print(querySnapshot.docs.first.data().toString());
-    for(int i=0;i<25;i++){
+    for (int i = 0; i < 25; i++) {
       print('datat adddddd 1');
       await ref.add(ds);
     }
   }
+
   static Future<Ad> getAd(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var value = List.filled(0, Ad('', ''), growable: true);
@@ -236,19 +238,21 @@ class FirebaseDB {
     var value = List.filled(0, Feed('', '', '', '', ''), growable: true);
     var ref = firestore.collection('feeds');
     QuerySnapshot querySnapshot = await ref
-            .where('status', isEqualTo: 'True')
-            .where('feedType', isEqualTo: true)
-            .where('language', isEqualTo: language ? 'English' : 'Hindi').orderBy('clicks',descending: true)
-            .limit(10)
-            .get();
-      List<DocumentSnapshot> ds = querySnapshot.docs;
-      Globals.lastPostId = ds.last;
-      ds.forEach((element) async {
-        value.add(new Feed(element['url2'], element['news'], element['truth'],
-            element['url1'], element.id));
-      });
-      return value;
+        .where('status', isEqualTo: 'True')
+        .where('feedType', isEqualTo: true)
+        .where('language', isEqualTo: language ? 'English' : 'Hindi')
+        .orderBy('clicks', descending: true)
+        .limit(10)
+        .get();
+    List<DocumentSnapshot> ds = querySnapshot.docs;
+    Globals.lastPostId = ds.last;
+    ds.forEach((element) async {
+      value.add(new Feed(element['url2'], element['news'], element['truth'],
+          element['url1'], element.id));
+    });
+    return value;
   }
+
   static Future<List<Feed>> getRecentChecks(language) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var value = List.filled(0, Feed('', '', '', '', ''), growable: true);
@@ -256,14 +260,15 @@ class FirebaseDB {
     QuerySnapshot querySnapshot = await ref
         .where('status', isEqualTo: 'True')
         .where('feedType', isEqualTo: true)
-        .where('language', isEqualTo: language ? 'English' : 'Hindi').orderBy('time',descending: true)
+        .where('language', isEqualTo: language ? 'English' : 'Hindi')
+        .orderBy('time', descending: true)
         .limit(10)
         .get();
     List<DocumentSnapshot> ds = querySnapshot.docs;
     Globals.lastPostId = ds.last;
     ds.forEach((element) async {
-    value.add(new Feed(element['url2'], element['news'], element['truth'],
-    element['url1'], element.id));
+      value.add(new Feed(element['url2'], element['news'], element['truth'],
+          element['url1'], element.id));
     });
     return value;
   }
@@ -317,13 +322,16 @@ class FirebaseDB {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var ref = firestore.collection('claims');
     print('sdfcse' + status);
-    var data = List.filled(0, new SearchResults.fromJson({
-    'news' : '',
-    'claimId' : '',
-    'requestedByUid' : '',
-    'url2' : '',
-    'status' : '',
-    }), growable: true);
+    var data = List.filled(
+        0,
+        new SearchResults.fromJson({
+          'news': '',
+          'claimId': '',
+          'requestedByUid': '',
+          'url2': '',
+          'status': '',
+        }),
+        growable: true);
     switch (status) {
       case 'Pending':
         {
@@ -335,8 +343,7 @@ class FirebaseDB {
           List<DocumentSnapshot> ds = querySnapshot.docs;
           ds.forEach((element) {
             print(element);
-            data.add(new SearchResults.fromJson(
-                element.data()));
+            data.add(new SearchResults.fromJson(element.data()));
           });
           return data;
         }
@@ -350,8 +357,7 @@ class FirebaseDB {
               .get();
           List<DocumentSnapshot> ds = querySnapshot.docs;
           ds.forEach((element) {
-            data.add(new SearchResults.fromJson(
-                element.data()));
+            data.add(new SearchResults.fromJson(element.data()));
           });
           return data;
         }
@@ -365,8 +371,7 @@ class FirebaseDB {
               .get();
           List<DocumentSnapshot> ds = querySnapshot.docs;
           ds.forEach((element) {
-            data.add(new SearchResults.fromJson(
-                element.data()));
+            data.add(new SearchResults.fromJson(element.data()));
           });
           querySnapshot = await ref
               .where('status', isEqualTo: 'True')
@@ -374,8 +379,7 @@ class FirebaseDB {
               .get();
           ds = querySnapshot.docs;
           ds.forEach((element) {
-            data.add(new SearchResults.fromJson(
-                element.data()));
+            data.add(new SearchResults.fromJson(element.data()));
           });
           return data;
         }
@@ -390,8 +394,7 @@ class FirebaseDB {
           print(ds.length);
           ds.forEach((element) {
             print(element.data());
-            data.add(new SearchResults.fromJson(
-                element.data()));
+            data.add(new SearchResults.fromJson(element.data()));
           });
         }
         break;

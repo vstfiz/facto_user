@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:facto_user/model/categories.dart';
+import 'package:facto_user/model/feed.dart';
 import 'package:facto_user/util/colors.dart';
 import 'package:facto_user/util/globals.dart';
 import 'package:facto_user/util/images.dart';
@@ -11,8 +12,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:facto_user/database/firebase.dart';
+import 'package:swipedetector/swipedetector.dart';
+import 'package:toast/toast.dart';
 
 import 'details_screen.dart';
+
+
+var feeds = List.filled(0, Feed('', '', '', '', ''), growable: true);
+int extIndex;
+var recentFacts;
+String type;
 
 class Explore extends StatefulWidget {
   @override
@@ -21,18 +30,34 @@ class Explore extends StatefulWidget {
 
 class _ExploreState extends State<Explore> {
   final GlobalKey<ScaffoldState> _scaffoldkey = new GlobalKey<ScaffoldState>();
-  var feeds;
-  var recentFacts;
+
+
   var categories = List.filled(0, Categories('', ''), growable: true);
   bool isLoading = true;
+  PageController _pageController;
 
-  void _openAddEntryDialog(String claim, String url, String url1, String truth,
+  void _openAddEntryDialog(int index, String typee,
       BuildContext context) {
-    Navigator.of(context).push(new MaterialPageRoute<Null>(
-        builder: (BuildContext context) {
-          return new CardDialog(claim, url, url1, truth);
-        },
-        fullscreenDialog: true));
+    if(type == 'Trending'){
+      extIndex = index;
+      type = typee;
+      Navigator.of(context).push(new MaterialPageRoute<Null>(
+          builder: (BuildContext context) {
+            return new CardDialog();
+          },
+          fullscreenDialog: true));
+    }
+    else{
+      extIndex = index;
+      type = typee;
+
+      Navigator.of(context).push(new MaterialPageRoute<Null>(
+          builder: (BuildContext context) {
+            return new CardDialog();
+          },
+          fullscreenDialog: true));
+    }
+
   }
 
   initState() {
@@ -44,33 +69,37 @@ class _ExploreState extends State<Explore> {
     feeds = await FirebaseDB.getTrending(Globals.language, context);
     categories = await FirebaseDB.getCategories();
     recentFacts = await FirebaseDB.getRecentChecks(Globals.language);
+    print('categories len : ' + categories.length.toString());
     setState(() {
       isLoading = false;
     });
   }
 
   Widget _loadingScreen(String value) {
-    return
-      AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0)),
-          backgroundColor: Colors.white,
-          content: Container(
-              height: Globals.getHeight(80),
-              child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset(Images.logo,width: Globals.getWidth(100),height: Globals.getHeight(50),),
-
-                      Container(child:  LinearProgressIndicator(
-                        backgroundColor: Colors.grey,
-                        valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-                      ),width: Globals.getWidth(200))
-                    ],
-                  )
-              )));
+    return AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        backgroundColor: Colors.white,
+        content: Container(
+            height: Globals.getHeight(80),
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset(
+                  Images.logo,
+                  width: Globals.getWidth(100),
+                  height: Globals.getHeight(50),
+                ),
+                Container(
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.grey,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                    ),
+                    width: Globals.getWidth(200))
+              ],
+            ))));
   }
 
   @override
@@ -202,10 +231,7 @@ class _ExploreState extends State<Explore> {
                                   return GestureDetector(
                                     onTap: () {
                                       _openAddEntryDialog(
-                                          recentFacts[index].claim,
-                                          recentFacts[index].url,
-                                          recentFacts[index].url1,
-                                          recentFacts[index].truth,
+                                          index,'Recent',
                                           context);
                                     },
                                     child: Container(
@@ -289,10 +315,7 @@ class _ExploreState extends State<Explore> {
                                   return GestureDetector(
                                     onTap: () {
                                       _openAddEntryDialog(
-                                          feeds[index].claim,
-                                          feeds[index].url,
-                                          feeds[index].url1,
-                                          feeds[index].truth,
+                                          index,'Trending',
                                           context);
                                       // setState(() {
                                       //   if (isDropdownOpened) {
@@ -352,150 +375,1077 @@ class _ExploreState extends State<Explore> {
                                 textAlign: TextAlign.center,
                               )
                             : ListView(
-                                scrollDirection: Axis.horizontal,
-                                children:
-                                    List.generate(categories.length, (index) {
-                                  return OpenContainer(
-                                    closedElevation: 0.0,
-                                    openElevation: 15.0,
-                                    index: index,
-                                    transitionType:
-                                        ContainerTransitionType.fade,
-                                    transitionDuration:
-                                        const Duration(milliseconds: 1000),
-                                    openBuilder: (context, action) {
-                                      return DetailScreen(
-                                          categories[index].name,
-                                          categories[index].url);
-                                    },
-                                    closedBuilder: (context, action) {
-                                      return !(Globals.selectedIndex == index)
-                                          ? Container(
-                                              width: Globals.width * 0.25,
-                                              height: Globals.height * 0.18,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      Globals.width * 0.02),
-                                              decoration: BoxDecoration(
-                                                color: ColorStyle.button_red,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                border: Border.all(
-                                                    color: Colors.white),
-                                              ),
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  Positioned(
-                                                    top: Globals.height *
-                                                        (34 / 812),
-                                                    // left: Globals.width *
-                                                    //     (35 / 375),
-                                                    child: Container(
-                                                        height: Globals.width *
-                                                            (48 / 375),
-                                                        width: Globals.width *
-                                                            (48 / 375),
-                                                        child: ImageIcon(
-                                                          new NetworkImage(
-                                                              categories[index]
-                                                                  .url),
-                                                          color: Colors.white,
-                                                        ),),
-                                                  ),
-                                                  Positioned(
-                                                      top: Globals.height *
-                                                          (102 / 812),
-                                                      // left: Globals.width *
-                                                      //     (0 / 375),
+                                scrollDirection: Axis.vertical,
+                                children: List.generate((categories.length ~/ 3) + 1 ,
+                                    (index) {
+                                  print('int val'
+                                      + index.toString());
+                                  if(categories.length % 3 == 0){
+                                    return OpenContainer(
+                                      closedElevation: 0.0,
+                                      openElevation: 15.0,
+                                      index: index,
+                                      transitionType:
+                                      ContainerTransitionType.fade,
+                                      transitionDuration:
+                                      const Duration(milliseconds: 1000),
+                                      openBuilder: (context, action) {
+                                        return DetailScreen(
+                                            categories[index].name,
+                                            categories[index].url);
+                                      },
+                                      closedBuilder: (context, action) {
+                                        return  Row(
+                                          children: [
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
                                                       child: Container(
-                                                        height: Globals.height *
-                                                            (30 / 812),
-                                                        width: Globals.width *
-                                                            0.23,
-                                                        child: AutoSizeText(
-                                                          categories[index]
-                                                              .name,
-                                                          style: GoogleFonts
-                                                              .montserrat(
-                                                                  fontSize: 20,
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          overflow: TextOverflow.visible,
-                                                        ),
-                                                      ))
-                                                ],
-                                              ))
-                                          : Container(
-                                              width: Globals.width * 0.25,
-                                              height: Globals.height * 0.18,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      Globals.width * 0.02),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                border: Border.all(
-                                                    color:
-                                                        ColorStyle.button_red),
-                                              ),
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  Positioned(
-                                                    top: Globals.height *
-                                                        (34 / 812),
-                                                    // left: Globals.width *
-                                                    //     (35 / 375),
-                                                    child: Container(
-                                                      height: Globals.width *
-                                                          (48 / 375),
-                                                      width: Globals.width *
-                                                          (48 / 375),
-                                                      child: ImageIcon(
-                                                        new NetworkImage(
-                                                            categories[index]
-                                                                .url),
-                                                        color: ColorStyle
-                                                            .button_red,
-                                                      ),
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
                                                     ),
-                                                  ),
-                                                  Positioned(
-                                                      top: Globals.height *
-                                                          (102 / 812),
-                                                      // left: Globals.width *
-                                                      //     (0 / 375),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
                                                       child: Container(
-                                                        height: Globals.height *
-                                                            (30 / 812),
-                                                        width: Globals.width *
-                                                            0.23,
-                                                        child: AutoSizeText(
-                                                          categories[index]
-                                                              .name,
-                                                          style: GoogleFonts
-                                                              .montserrat(
-                                                                  fontSize: 20,
-                                                                  color: ColorStyle
-                                                                      .button_red,
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 1]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                1]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 2]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                2]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                  else if (categories.length % 3 == 1){
+                                    if (index == categories.length ~/ 3){
+                                      return OpenContainer(
+                                        closedElevation: 0.0,
+                                        openElevation: 15.0,
+                                        index: index,
+                                        transitionType:
+                                        ContainerTransitionType.fade,
+                                        transitionDuration:
+                                        const Duration(milliseconds: 1000),
+                                        openBuilder: (context, action) {
+                                          return DetailScreen(
+                                              categories[index].name,
+                                              categories[index].url);
+                                        },
+                                        closedBuilder: (context, action) {
+                                          return  Row(
+                                            children: [
+                                              Container(
+                                                  width: Globals.width *
+                                                      0.25,
+                                                  height: Globals.height *
+                                                      0.18,
+                                                  margin: EdgeInsets
+                                                      .symmetric(
+                                                      horizontal:
+                                                      Globals.width *
+                                                          0.02,
+                                                      vertical: 20.0),
+                                                  decoration:
+                                                  BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(10),
+                                                    border: Border.all(
+                                                        color: ColorStyle
+                                                            .button_red),
+                                                  ),
+                                                  child: Stack(
+                                                    alignment:
+                                                    Alignment.center,
+                                                    children: [
+                                                      Positioned(
+                                                        top: 0.0,
+                                                        left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                        child: Container(
+                                                            width: Globals
+                                                                .width *
+                                                                0.25,
+                                                            height: Globals
+                                                                .height *
+                                                                0.18,
+                                                            decoration: BoxDecoration(
+                                                                image: DecorationImage(
+                                                                    image: NetworkImage(categories[index]
+                                                                        .url),
+                                                                    fit: BoxFit
+                                                                        .cover))),
+                                                      ),
+                                                      Positioned(
+                                                          bottom: 0,
+                                                          left: 10,
+                                                          right: 10,
+                                                          child:
+                                                          Container(
+                                                            height: Globals
+                                                                .height *
+                                                                (30 /
+                                                                    812),
+                                                            width: Globals
+                                                                .width *
+                                                                0.23 -
+                                                                20,
+                                                            child:
+                                                            AutoSizeText(
+                                                              categories[
+                                                              index]
+                                                                  .name,
+                                                              style: GoogleFonts.montserrat(
+                                                                  fontSize:
+                                                                  18,
+                                                                  color: Colors
+                                                                      .black,
                                                                   fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        ),
-                                                      ))
-                                                ],
-                                              ));
-                                    },
-                                  );
+                                                                  FontWeight.bold),
+                                                              textAlign:
+                                                              TextAlign
+                                                                  .left,
+                                                              overflow:
+                                                              TextOverflow
+                                                                  .visible,
+                                                            ),
+                                                          ))
+                                                    ],
+                                                  )),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                    else{return OpenContainer(
+                                      closedElevation: 0.0,
+                                      openElevation: 15.0,
+                                      index: index,
+                                      transitionType:
+                                      ContainerTransitionType.fade,
+                                      transitionDuration:
+                                      const Duration(milliseconds: 1000),
+                                      openBuilder: (context, action) {
+                                        return DetailScreen(
+                                            categories[index].name,
+                                            categories[index].url);
+                                      },
+                                      closedBuilder: (context, action) {
+                                        return  Row(
+                                          children: [
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 1]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                1]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 2]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                2]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                          ],
+                                        );
+                                      },
+                                    );}
+                                  }
+                                  else{
+                                    if (index == categories.length ~/ 3){
+                                      return OpenContainer(
+                                        closedElevation: 0.0,
+                                        openElevation: 15.0,
+                                        index: index,
+                                        transitionType:
+                                        ContainerTransitionType.fade,
+                                        transitionDuration:
+                                        const Duration(milliseconds: 1000),
+                                        openBuilder: (context, action) {
+                                          return DetailScreen(
+                                              categories[index].name,
+                                              categories[index].url);
+                                        },
+                                        closedBuilder: (context, action) {
+                                          return  Row(
+                                            children: [
+                                              Container(
+                                                  width: Globals.width *
+                                                      0.25,
+                                                  height: Globals.height *
+                                                      0.18,
+                                                  margin: EdgeInsets
+                                                      .symmetric(
+                                                      horizontal:
+                                                      Globals.width *
+                                                          0.02,
+                                                      vertical: 20.0),
+                                                  decoration:
+                                                  BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(10),
+                                                    border: Border.all(
+                                                        color: ColorStyle
+                                                            .button_red),
+                                                  ),
+                                                  child: Stack(
+                                                    alignment:
+                                                    Alignment.center,
+                                                    children: [
+                                                      Positioned(
+                                                        top: 0.0,
+                                                        left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                        child: Container(
+                                                            width: Globals
+                                                                .width *
+                                                                0.25,
+                                                            height: Globals
+                                                                .height *
+                                                                0.18,
+                                                            decoration: BoxDecoration(
+                                                                image: DecorationImage(
+                                                                    image: NetworkImage(categories[index]
+                                                                        .url),
+                                                                    fit: BoxFit
+                                                                        .cover))),
+                                                      ),
+                                                      Positioned(
+                                                          bottom: 0,
+                                                          left: 10,
+                                                          right: 10,
+                                                          child:
+                                                          Container(
+                                                            height: Globals
+                                                                .height *
+                                                                (30 /
+                                                                    812),
+                                                            width: Globals
+                                                                .width *
+                                                                0.23 -
+                                                                20,
+                                                            child:
+                                                            AutoSizeText(
+                                                              categories[
+                                                              index]
+                                                                  .name,
+                                                              style: GoogleFonts.montserrat(
+                                                                  fontSize:
+                                                                  18,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                  FontWeight.bold),
+                                                              textAlign:
+                                                              TextAlign
+                                                                  .left,
+                                                              overflow:
+                                                              TextOverflow
+                                                                  .visible,
+                                                            ),
+                                                          ))
+                                                    ],
+                                                  )),
+                                              Container(
+                                                  width: Globals.width *
+                                                      0.25,
+                                                  height: Globals.height *
+                                                      0.18,
+                                                  margin: EdgeInsets
+                                                      .symmetric(
+                                                      horizontal:
+                                                      Globals.width *
+                                                          0.02,
+                                                      vertical: 20.0),
+                                                  decoration:
+                                                  BoxDecoration(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(10),
+                                                    border: Border.all(
+                                                        color: ColorStyle
+                                                            .button_red),
+                                                  ),
+                                                  child: Stack(
+                                                    alignment:
+                                                    Alignment.center,
+                                                    children: [
+                                                      Positioned(
+                                                        top: 0.0,
+                                                        left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                        child: Container(
+                                                            width: Globals
+                                                                .width *
+                                                                0.25,
+                                                            height: Globals
+                                                                .height *
+                                                                0.18,
+                                                            decoration: BoxDecoration(
+                                                                image: DecorationImage(
+                                                                    image: NetworkImage(categories[index + 1]
+                                                                        .url),
+                                                                    fit: BoxFit
+                                                                        .cover))),
+                                                      ),
+                                                      Positioned(
+                                                          bottom: 0,
+                                                          left: 10,
+                                                          right: 10,
+                                                          child:
+                                                          Container(
+                                                            height: Globals
+                                                                .height *
+                                                                (30 /
+                                                                    812),
+                                                            width: Globals
+                                                                .width *
+                                                                0.23 -
+                                                                20,
+                                                            child:
+                                                            AutoSizeText(
+                                                              categories[
+                                                              index +
+                                                                  1]
+                                                                  .name,
+                                                              style: GoogleFonts.montserrat(
+                                                                  fontSize:
+                                                                  18,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                  FontWeight.bold),
+                                                              textAlign:
+                                                              TextAlign
+                                                                  .left,
+                                                              overflow:
+                                                              TextOverflow
+                                                                  .visible,
+                                                            ),
+                                                          ))
+                                                    ],
+                                                  )),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                    else{return OpenContainer(
+                                      closedElevation: 0.0,
+                                      openElevation: 15.0,
+                                      index: index,
+                                      transitionType:
+                                      ContainerTransitionType.fade,
+                                      transitionDuration:
+                                      const Duration(milliseconds: 1000),
+                                      openBuilder: (context, action) {
+                                        return DetailScreen(
+                                            categories[index].name,
+                                            categories[index].url);
+                                      },
+                                      closedBuilder: (context, action) {
+                                        return  Row(
+                                          children: [
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 1]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                1]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                            Container(
+                                                width: Globals.width *
+                                                    0.25,
+                                                height: Globals.height *
+                                                    0.18,
+                                                margin: EdgeInsets
+                                                    .symmetric(
+                                                    horizontal:
+                                                    Globals.width *
+                                                        0.02,
+                                                    vertical: 20.0),
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius
+                                                      .circular(10),
+                                                  border: Border.all(
+                                                      color: ColorStyle
+                                                          .button_red),
+                                                ),
+                                                child: Stack(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  children: [
+                                                    Positioned(
+                                                      top: 0.0,
+                                                      left: 0.0,
+// left: Globals.width *
+//     (35 / 375),
+                                                      child: Container(
+                                                          width: Globals
+                                                              .width *
+                                                              0.25,
+                                                          height: Globals
+                                                              .height *
+                                                              0.18,
+                                                          decoration: BoxDecoration(
+                                                              image: DecorationImage(
+                                                                  image: NetworkImage(categories[index + 2]
+                                                                      .url),
+                                                                  fit: BoxFit
+                                                                      .cover))),
+                                                    ),
+                                                    Positioned(
+                                                        bottom: 0,
+                                                        left: 10,
+                                                        right: 10,
+                                                        child:
+                                                        Container(
+                                                          height: Globals
+                                                              .height *
+                                                              (30 /
+                                                                  812),
+                                                          width: Globals
+                                                              .width *
+                                                              0.23 -
+                                                              20,
+                                                          child:
+                                                          AutoSizeText(
+                                                            categories[
+                                                            index +
+                                                                2]
+                                                                .name,
+                                                            style: GoogleFonts.montserrat(
+                                                                fontSize:
+                                                                18,
+                                                                color: Colors
+                                                                    .black,
+                                                                fontWeight:
+                                                                FontWeight.bold),
+                                                            textAlign:
+                                                            TextAlign
+                                                                .left,
+                                                            overflow:
+                                                            TextOverflow
+                                                                .visible,
+                                                          ),
+                                                        ))
+                                                  ],
+                                                )),
+                                          ],
+                                        );
+                                      },
+                                    );}
+
+                                  }
                                 }),
                               ),
                       )),
@@ -508,18 +1458,172 @@ class _ExploreState extends State<Explore> {
 }
 
 class CardDialog extends StatefulWidget {
-  final String claim;
-  final String url;
-  final String url1;
-  final String truth;
 
-  CardDialog(this.claim, this.url, this.url1, this.truth);
+
+  CardDialog();
+
+
 
   @override
   CardDialogState createState() => new CardDialogState();
 }
 
 class CardDialogState extends State<CardDialog> {
+  PageController _pageController = new PageController(initialPage: extIndex);
+  Duration pageTurnDuration = Duration(milliseconds: 500);
+  Curve pageTurnCurve = Curves.ease;
+
+  void _goForward() {
+    _pageController.nextPage(duration: pageTurnDuration, curve: pageTurnCurve);
+  }
+
+  void _goBack() {
+    _pageController.previousPage(
+        duration: pageTurnDuration, curve: pageTurnCurve);
+  }
+
+
+  var widgets =  List.generate(type=='Trending'?feeds.length:recentFacts.length, (index) {
+
+    return Container(
+      margin: EdgeInsets.only(top: Globals.height * 0.005),
+      height: Globals.height * 0.85,
+      width: Globals.width,
+      child: Stack(
+        children: [
+          Positioned(
+            top: Globals.height * 0.05,
+            left: Globals.width * 0.05,
+            child: Container(
+              padding: EdgeInsets.only(
+                  top: Globals.getHeight(22),
+                  left: 10,
+                  right: 10.0,
+                  bottom: 10.0),
+              height: Globals.height * 0.165,
+              width: Globals.width * 0.9,
+              decoration: BoxDecoration(
+                  color: Color(0xFFEDF2F4),
+                  border: Border.all(color: Colors.red, width: 1.0),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40.0),
+                      bottomRight: Radius.circular(40.0))),
+              child: Center(
+                child: AutoSizeText(type=='Trending'?feeds[index].claim:recentFacts[index].claim,
+                    style: GoogleFonts.montserrat(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w300,
+                    )),
+              ),
+            ),
+          ),
+          Positioned(
+            top: Globals.height * 0.25,
+            left: Globals.width * 0.05,
+            child: Container(
+              height: Globals.height * 0.25,
+              width: Globals.width * 0.9,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40.0),
+                    bottomRight: Radius.circular(40.0)),
+                image: DecorationImage(
+                    image: NetworkImage(    type=='Trending'?feeds[index].url:recentFacts[index].url), fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          Positioned(
+            top: Globals.height * 0.51,
+            left: Globals.width * 0.06,
+            child: Container(
+              height: Globals.height * 0.15,
+              width: Globals.width * 0.8,
+              child: AutoSizeText(
+                  'Source: ' + Uri.parse( type=='Trending'?feeds[index].url1:recentFacts[index].url1.toString()).host),
+            ),
+          ),
+          Positioned(
+            top: Globals.height * 0.6,
+            left: Globals.width * 0.05,
+            child: Container(
+              padding: EdgeInsets.only(
+                  top: Globals.getHeight(22),
+                  left: 10,
+                  right: 10.0,
+                  bottom: 10.0),
+              height: Globals.height * 0.17,
+              width: Globals.width * 0.9,
+              child: Center(
+                child: AutoSizeText( type=='Trending'?feeds[index].truth:recentFacts[index].truth,
+                    style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.w300, fontSize: 16)),
+              ),
+              decoration: BoxDecoration(
+                  color: Color(0xFFEDF2F4),
+                  border: Border.all(color: Colors.green, width: 1.0),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40.0),
+                      bottomRight: Radius.circular(40.0))),
+            ),
+          ),
+          Positioned(
+            top: Globals.height * 0.03,
+            left: Globals.width * 0.2,
+            child: Container(
+              width: Globals.width * 0.22,
+              height: Globals.getHeight(40),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Color(0xFFC40010)),
+              child: Center(
+                child: Text(
+                  'Claim',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: Globals.height * 0.58,
+            right: Globals.width * 0.17,
+            child: Container(
+              width: Globals.width * 0.22,
+              height: Globals.getHeight(40),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Color(0xFF34A853)),
+              child: Center(
+                child: Text(
+                  'Truth',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              offset: const Offset(5.0, 5.0),
+              blurRadius: 10.0,
+              spreadRadius: 2.0,
+            ), //BoxShadow
+            BoxShadow(
+              color: Colors.white,
+              offset: const Offset(0.0, 0.0),
+              blurRadius: 0.0,
+              spreadRadius: 0.0,
+            ),
+          ]),
+    );
+  });
+
+  int index = extIndex;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -565,142 +1669,37 @@ class CardDialogState extends State<CardDialog> {
           )
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.only(top: Globals.height * 0.005),
-        height: Globals.height * 0.85,
-        width: Globals.width,
-        child: Stack(
-          children: [
-            Positioned(
-              top: Globals.height * 0.05,
-              left: Globals.width * 0.05,
-              child: Container(
-                padding: EdgeInsets.only(
-                    top: Globals.getHeight(22),
-                    left: 10,
-                    right: 10.0,
-                    bottom: 10.0),
-                height: Globals.height * 0.165,
-                width: Globals.width * 0.9,
-                decoration: BoxDecoration(
-                    color: Color(0xFFEDF2F4),
-                    border: Border.all(color: Colors.red, width: 1.0),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40.0),
-                        bottomRight: Radius.circular(40.0))),
-                child: Center(
-                  child: AutoSizeText(this.widget.claim,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w300,
-                      )),
-                ),
-              ),
-            ),
-            Positioned(
-              top: Globals.height * 0.25,
-              left: Globals.width * 0.05,
-              child: Container(
-                height: Globals.height * 0.25,
-                width: Globals.width * 0.9,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.0),
-                      bottomRight: Radius.circular(40.0)),
-                  image: DecorationImage(
-                      image: NetworkImage(this.widget.url), fit: BoxFit.cover),
-                ),
-              ),
-            ),
-            Positioned(
-              top: Globals.height * 0.51,
-              left: Globals.width * 0.06,
-              child: Container(
-                height: Globals.height * 0.15,
-                width: Globals.width * 0.8,
-                child: AutoSizeText(
-                    'Source: ' + Uri.parse(this.widget.url1.toString()).host),
-              ),
-            ),
-            Positioned(
-              top: Globals.height * 0.6,
-              left: Globals.width * 0.05,
-              child: Container(
-                padding: EdgeInsets.only(
-                    top: Globals.getHeight(22),
-                    left: 10,
-                    right: 10.0,
-                    bottom: 10.0),
-                height: Globals.height * 0.17,
-                width: Globals.width * 0.9,
-                child: Center(
-                  child: AutoSizeText(this.widget.truth,
-                      style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.w300, fontSize: 16)),
-                ),
-                decoration: BoxDecoration(
-                    color: Color(0xFFEDF2F4),
-                    border: Border.all(color: Colors.green, width: 1.0),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40.0),
-                        bottomRight: Radius.circular(40.0))),
-              ),
-            ),
-            Positioned(
-              top: Globals.height * 0.03,
-              left: Globals.width * 0.2,
-              child: Container(
-                width: Globals.width * 0.22,
-                height: Globals.getHeight(40),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: Color(0xFFC40010)),
-                child: Center(
-                  child: Text(
-                    'Claim',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: Globals.height * 0.58,
-              right: Globals.width * 0.17,
-              child: Container(
-                width: Globals.width * 0.22,
-                height: Globals.getHeight(40),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: Color(0xFF34A853)),
-                child: Center(
-                  child: Text(
-                    'Truth',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                offset: const Offset(5.0, 5.0),
-                blurRadius: 10.0,
-                spreadRadius: 2.0,
-              ), //BoxShadow
-              BoxShadow(
-                color: Colors.white,
-                offset: const Offset(0.0, 0.0),
-                blurRadius: 0.0,
-                spreadRadius: 0.0,
-              ),
-            ]),
-      ),
+      body:SwipeDetector(
+        onSwipeDown: (){
+          if(index > 0){
+            setState(() {
+              index--;
+            });
+            _goBack();
+          }
+          else{
+            Toast.show('Please Swipe Down', context);
+          }
+        },
+        onSwipeUp: (){
+          if(index < feeds.length - 1){
+            setState(() {
+              index++;
+            });
+            _goForward();
+          }
+          else{
+            Toast.show('No new Trending Posts', context);
+          }
+        },
+        child: PageView.builder(
+            scrollDirection: Axis.vertical,
+            controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return widgets[index];
+            }),
+      )
     );
   }
 }
