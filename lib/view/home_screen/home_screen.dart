@@ -158,8 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Share.share(shareMessage);
             }
           },
-          type: BottomNavigationBarType.shifting,
-          backgroundColor: Color(0xFFEDF2F4).withOpacity(0.1),
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Color(0xFFEDF2F4),
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10),
@@ -169,8 +171,15 @@ class _HomeScreenState extends State<HomeScreen> {
           : SizedBox(),
     ), onWillPop: (
     ){
-      _exitDialog();
-      return Future.value(false);
+      if(Globals.currentTab!=2){
+        Globals.currentTab = 2;
+        Globals.pageController.jumpToPage(2);
+        return Future.value(false);
+      }
+      else{
+        _exitDialog();
+        return Future.value(false);
+      }
     });
   }
 }

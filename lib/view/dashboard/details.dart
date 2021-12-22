@@ -7,7 +7,6 @@ import 'package:facto_user/view/dashboard/dashboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sms/generated/i18n.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class Details extends StatefulWidget {

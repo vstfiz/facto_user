@@ -9,7 +9,6 @@ import 'package:facto_user/view/auth/sign_in.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp/flutter_otp.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:toast/toast.dart';
@@ -26,7 +25,6 @@ class OTP extends StatefulWidget {
 class _OTPState extends State<OTP> with SingleTickerProviderStateMixin {
   final int time = 30;
   int timeInSeconds;
-  FlutterOtp otp = new FlutterOtp();
   String smsOtp;
   Timer t;
 

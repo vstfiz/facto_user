@@ -2,7 +2,7 @@ name: facto_user
 description: A new Flutter application.
 
 publish_to:
-version: 1.0.0+1
+version: 1.0.0+6
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -25,7 +25,6 @@ dependencies:
   firebase_auth: ^3.0.1
   google_sign_in: ^5.0.5
   firebase_core: ^1.4.0
-  flutter_otp: ^0.3.2
   cloud_firestore: ^2.4.0
   webview_flutter: ^2.0.10
   share: ^2.0.4
@@ -40,7 +39,6 @@ dependencies:
   image: ^3.0.2
   flutter_image_compress: ^1.1.0
   flutter_webview_plugin: ^0.4.0
-  sms: ^0.2.4
 
 dev_dependencies:
   flutter_test:

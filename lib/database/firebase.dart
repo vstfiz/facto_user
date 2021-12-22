@@ -63,7 +63,6 @@ class FirebaseDB {
             .where('geo', isEqualTo: Globals.location)
             .where('feedType', isEqualTo: Globals.feedType)
             .where('language', isEqualTo: language ? 'English' : 'Hindi')
-            .limit(5)
             .get();
       } else {
         querySnapshot = await ref
@@ -72,7 +71,7 @@ class FirebaseDB {
             .where('feedType', isEqualTo: Globals.feedType)
             .where('language', isEqualTo: language ? 'English' : 'Hindi')
             .where('category', isEqualTo: Globals.category)
-            .limit(5)
+
             .get();
       }
       List<DocumentSnapshot> ds = querySnapshot.docs;
@@ -90,7 +89,6 @@ class FirebaseDB {
       QuerySnapshot querySnapshot = await ref
           .where('status', isEqualTo: 'True')
           .where('feedType', isEqualTo: false)
-          .limit(5)
           .get();
       List<DocumentSnapshot> ds = querySnapshot.docs;
       print('no of cideo posts' + ds.length.toString());
@@ -174,7 +172,7 @@ class FirebaseDB {
     }
   }
 
-  static Future<Ad> getAd(BuildContext context) async {
+  static Future<List<Ad>> getAd(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     var value = List.filled(0, Ad('', ''), growable: true);
     var ref = firestore.collection('ads');
@@ -183,9 +181,7 @@ class FirebaseDB {
     ds.forEach((element) {
       value.add(new Ad(element['url'], element['value']));
     });
-    Random r = new Random();
-    int k = r.nextInt(value.length - 1);
-    return value[k];
+    return value;
   }
 
   static Future<void> createClaim(

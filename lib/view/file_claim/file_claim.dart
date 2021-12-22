@@ -152,10 +152,10 @@ class _FileClaimState extends State<FileClaim> {
         backgroundColor: Color(0xFFEDF2F4),
         actions: [
          Stack(
+           alignment: Alignment.center,
            children: [
              Container(
                width: Globals.width,
-               padding: EdgeInsets.symmetric(vertical: 15),
                child: AutoSizeText(
                  'Fact Check',
                  textAlign: TextAlign.center,
@@ -164,25 +164,26 @@ class _FileClaimState extends State<FileClaim> {
                ),
              ),
              Positioned(child: Container(
-               height: Globals.getHeight(30),
+               height: Globals.height * (50 / 812),
+               width: Globals.width * (40 / 375),
                child: TextButton(
                  onPressed: () {
                    if(Globals.currentTab != 2){
                      setState(() {
                        Globals.currentTab = 2;
+                       Globals.pageController.jumpToPage(2);
                      });
-                     Globals.pageController.jumpToPage(2);
                    }
                    else{
                      Navigator.of(context).pop();
                    }
-                 },),
-               decoration: BoxDecoration(
-                   image: DecorationImage(
-                       image: new AssetImage(Images.back_btn),fit: BoxFit.contain
-                   )
-               ),
-             ),left: 0.0,top: 12.0)
+                 },child: new Image.asset(
+                 Images.back_btn,
+                 height: Globals.height * (24 / 812),
+                 width: Globals.width * (24 / 375),
+               ),),
+
+             ),left: 0.0)
              
            ],
          )

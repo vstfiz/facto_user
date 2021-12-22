@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         print(Globals.height);
         print(Globals.width);
         return MaterialApp(
-            title: 'FactO',
+            title: 'Major Project',
             theme: ThemeData(
               textTheme: TextTheme(
                   headline1: GoogleFonts.montserrat(fontWeight: FontWeight.w300),

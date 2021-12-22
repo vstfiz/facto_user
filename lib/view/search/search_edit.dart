@@ -1,7 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:facto_user/model/search_results.dart';
-import 'package:facto_user/services/searching/searching.dart';
 import 'package:facto_user/util/globals.dart';
 import 'package:facto_user/util/images.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,12 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 
-class Search extends StatefulWidget {
+class SearchEdit extends StatefulWidget {
   @override
-  _SearchState createState() => _SearchState();
+  _SearchEditState createState() => _SearchEditState();
 }
 
-class _SearchState extends State<Search> {
+class _SearchEditState extends State<SearchEdit> {
   TextEditingController _searchController = new TextEditingController();
   var queryResults = [];
   var tempStorage = [];
@@ -25,7 +23,7 @@ class _SearchState extends State<Search> {
         .collection('feeds')
         .get();
     querySnapshot.docs.forEach((element) {
-        queryResults.add(element);
+      queryResults.add(element);
     });
   }
 
@@ -79,37 +77,26 @@ class _SearchState extends State<Search> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFFEDF2F4),
+          leading: TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: new Image.asset(
+              Images.back_btn,
+              height: Globals.height * (24 / 812),
+              width: Globals.width * (24 / 375),
+            ),
+          ),
           actions: [
             Container(
               width: Globals.width,
-
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(left:0.0,
-                    child: Container(
-                    height: Globals.height * (50 / 812),
-                    width: Globals.width * (40 / 375),
-                    child: TextButton(
-                      onPressed: () {
-                        Globals.currentTab = 2;
-                        Globals.pageController.jumpToPage(2);
-                      },
-                      child: new Image.asset(
-                        Images.back_btn,
-                        height: Globals.height * (24 / 812),
-                        width: Globals.width * (24 / 375),
-                      ),
-                    ),
-                  ),),
-                  AutoSizeText(
-                    'Search',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.montserrat(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: AutoSizeText(
+                'Search',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserrat(
+                    fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             )
           ],
         ),
@@ -149,7 +136,7 @@ class _SearchState extends State<Search> {
                         hintText: 'Search Here',
                         hintStyle: TextStyle(fontSize: 20),
                         contentPadding:
-                            EdgeInsets.symmetric(horizontal: Globals.getWidth(20), vertical: Globals.getHeight(15)),
+                        EdgeInsets.symmetric(horizontal: Globals.getWidth(20), vertical: Globals.getHeight(15)),
                         border: InputBorder.none,
                         suffixIcon: Icon(
                           Icons.search,
@@ -236,12 +223,12 @@ class _SearchState extends State<Search> {
                   }),
                 ):
                 Center(child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                  children: [
 
-                  Image.asset(Images.no_data,height: 250,width: 250,),
-                  Text('No Data',style: GoogleFonts.montserrat(fontSize: 30),)
-                ],
-              ),),
+                    Image.asset(Images.no_data,height: 250,width: 250,),
+                    Text('No Data',style: GoogleFonts.montserrat(fontSize: 30),)
+                  ],
+                ),),
               ),
             )
           ],

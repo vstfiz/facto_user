@@ -117,7 +117,7 @@ class _AboutUsState extends State<AboutUs> {
               top: Globals.height * 0.25,
               left: Globals.width * 0.15,
               child: Container(
-                  height: Globals.height * 0.25,
+                  height: Globals.height * 0.3,
                   width: Globals.width * 0.7,
                   child: ReadMoreText(
                     'FactO News of  FACTO Digital Media (OPC) Private Limited is an independent fact-checking platform committed to fighting misinformation/disinformation, false and fake news that we come across social media and mainstream media. We provide our readers with verified facts and educate them on issues that focus on but not limited to political, communal, and social aspects.',
@@ -161,7 +161,7 @@ class _AboutUsState extends State<AboutUs> {
                           ]),
                       child: TextButton(
                         onPressed: () async {
-                          _webViewDialog('https://factonews.co/contact-us/');
+                          _webViewDialog('https://facto.co.in/contact-us/');
                         },
                         child: AutoSizeText(
                           'Contact Us',
@@ -256,7 +256,7 @@ class _AboutUsState extends State<AboutUs> {
                 height: Globals.height * (30/812),
                 child: TextButton(
                   onPressed: () {
-                    _webViewDialog('https://factonews.co/privacy-policy/');
+                    _webViewDialog('http://factonews.co/privacy-policy/');
                   },
                   child: AutoSizeText(
                     'Privacy',
